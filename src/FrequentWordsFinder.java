@@ -17,8 +17,13 @@ public class FrequentWordsFinder {
      */
     public String frequentWords(String sourceFileName) throws IOException {
         String content = new String(Files.readAllBytes(Paths.get(sourceFileName)));
-        Stream<String> stream = Stream.of(content.toLowerCase().split("\\W+")).parallel();
-        Map<String, Long> wordCountMap = stream.collect(Collectors.groupingBy(String::toString, Collectors.counting()));
+        Stream<String> stream = Stream.of(content.toLowerCase().split("\\W+"))
+                .map(e -> e.replaceAll("[^a-zA-Z]", ""))    // only letters
+                .filter(e -> e.length() > 1)                                 // more than one symbol
+                .parallel();
+        Map<String, Long> wordCountMap = stream.collect(Collectors.groupingBy(
+                String::toString,
+                Collectors.counting()));
 
         return convertMapToString(wordCountMap);
     }
